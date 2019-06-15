@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 80012
 File Encoding         : 65001
 
-Date: 2019-06-04 23:46:06
+Date: 2019-06-15 11:33:28
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -21,7 +21,7 @@ SET FOREIGN_KEY_CHECKS=0;
 DROP TABLE IF EXISTS `admin`;
 CREATE TABLE `admin` (
   `id` varchar(20) NOT NULL COMMENT '账号',
-  `password` varchar(50) DEFAULT NULL COMMENT '密码',
+  `password` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '密码',
   `name` varchar(20) DEFAULT NULL COMMENT '姓名',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -29,7 +29,7 @@ CREATE TABLE `admin` (
 -- ----------------------------
 -- Records of admin
 -- ----------------------------
-INSERT INTO `admin` VALUES ('admin', 'admin', '黄林杰');
+INSERT INTO `admin` VALUES ('admin', '$2a$10$uAAHR/u2T1tsR4oQt5E1dumoqmCUPEDeMX2W5wOnmyQCnQexvVQ.6', '黄林杰');
 
 -- ----------------------------
 -- Table structure for al
@@ -37,22 +37,28 @@ INSERT INTO `admin` VALUES ('admin', 'admin', '黄林杰');
 DROP TABLE IF EXISTS `al`;
 CREATE TABLE `al` (
   `courseid` varchar(20) DEFAULT NULL COMMENT '课程编号',
-  `academy` varchar(20) DEFAULT NULL COMMENT '学院'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='学院限制';
+  `academy` varchar(20) DEFAULT NULL COMMENT '学院',
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`),
+  KEY `FK_ID` (`courseid`),
+  CONSTRAINT `FK_ID` FOREIGN KEY (`courseid`) REFERENCES `course` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8 COMMENT='学院限制';
 
 -- ----------------------------
 -- Records of al
 -- ----------------------------
-INSERT INTO `al` VALUES ('1001', '信息学院');
-INSERT INTO `al` VALUES ('1002', '管理学院');
-INSERT INTO `al` VALUES ('1002', '经济学院');
-INSERT INTO `al` VALUES ('1003', '信息学院');
-INSERT INTO `al` VALUES ('1004', '经济学院');
-INSERT INTO `al` VALUES ('1005', '信息学院');
-INSERT INTO `al` VALUES ('1005', '医学院');
-INSERT INTO `al` VALUES ('1006', '管理学院');
-INSERT INTO `al` VALUES ('1006', '经济学院');
-INSERT INTO `al` VALUES ('1007', '信息学院');
+INSERT INTO `al` VALUES ('1001', '信息学院', '1');
+INSERT INTO `al` VALUES ('1002', '管理学院', '2');
+INSERT INTO `al` VALUES ('1002', '经济学院', '3');
+INSERT INTO `al` VALUES ('1003', '信息学院', '4');
+INSERT INTO `al` VALUES ('1004', '经济学院', '5');
+INSERT INTO `al` VALUES ('1005', '信息学院', '6');
+INSERT INTO `al` VALUES ('1005', '医学院', '7');
+INSERT INTO `al` VALUES ('1006', '管理学院', '8');
+INSERT INTO `al` VALUES ('1006', '经济学院', '9');
+INSERT INTO `al` VALUES ('1007', '信息学院', '10');
+INSERT INTO `al` VALUES ('1008', '数统学院', '22');
+INSERT INTO `al` VALUES ('1009', '数统学院', '26');
 
 -- ----------------------------
 -- Table structure for course
@@ -70,13 +76,15 @@ CREATE TABLE `course` (
 -- ----------------------------
 -- Records of course
 -- ----------------------------
-INSERT INTO `course` VALUES ('1001', 'c语言程序设计', '张老师', '5', '0');
+INSERT INTO `course` VALUES ('1001', 'c语言程序设计', '张老师', '5', '1');
 INSERT INTO `course` VALUES ('1002', '宏观经济学', '李老师', '3', '0');
 INSERT INTO `course` VALUES ('1003', 'java程序设计', '张老师', '4', '0');
 INSERT INTO `course` VALUES ('1004', '市场营销学', '李老师', '6', '0');
-INSERT INTO `course` VALUES ('1005', '大学英语', '王老师', '3', '0');
+INSERT INTO `course` VALUES ('1005', '大学英语', '王老师', '3', '1');
 INSERT INTO `course` VALUES ('1006', '大学语文', '洪老师', '5', '0');
-INSERT INTO `course` VALUES ('1007', '编译原理', '程老师', '5', '0');
+INSERT INTO `course` VALUES ('1007', '编译原理', '程老师', '5', '1');
+INSERT INTO `course` VALUES ('1008', '人工智能', '陈老师', '5', '0');
+INSERT INTO `course` VALUES ('1009', '高等数学', '张老师', '6', '0');
 
 -- ----------------------------
 -- Table structure for menu
@@ -111,7 +119,11 @@ INSERT INTO `menu` VALUES ('204', '个人选课情况', null, '200');
 DROP TABLE IF EXISTS `sc`;
 CREATE TABLE `sc` (
   `studentid` varchar(20) DEFAULT NULL COMMENT '学生学号',
-  `courseid` varchar(20) DEFAULT NULL COMMENT '课程编号'
+  `courseid` varchar(20) DEFAULT NULL COMMENT '课程编号',
+  KEY `studentid` (`studentid`),
+  KEY `courseid` (`courseid`),
+  CONSTRAINT `courseid` FOREIGN KEY (`courseid`) REFERENCES `course` (`id`),
+  CONSTRAINT `studentid` FOREIGN KEY (`studentid`) REFERENCES `student` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -120,6 +132,7 @@ CREATE TABLE `sc` (
 INSERT INTO `sc` VALUES ('16251102276', '1001');
 INSERT INTO `sc` VALUES ('16251102276', '1005');
 INSERT INTO `sc` VALUES ('16251102276', '1007');
+INSERT INTO `sc` VALUES ('16251102277', '1005');
 
 -- ----------------------------
 -- Table structure for student
@@ -127,7 +140,7 @@ INSERT INTO `sc` VALUES ('16251102276', '1007');
 DROP TABLE IF EXISTS `student`;
 CREATE TABLE `student` (
   `id` varchar(20) NOT NULL COMMENT '学号',
-  `password` varchar(50) DEFAULT NULL COMMENT '密码',
+  `password` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '密码',
   `name` varchar(20) DEFAULT NULL COMMENT '姓名',
   `major` varchar(20) DEFAULT NULL COMMENT '专业',
   `academy` varchar(20) DEFAULT NULL COMMENT '学院',
@@ -137,4 +150,6 @@ CREATE TABLE `student` (
 -- ----------------------------
 -- Records of student
 -- ----------------------------
-INSERT INTO `student` VALUES ('16251102276', '123', '黄林杰', '计算机科学与技术', '信息学院');
+INSERT INTO `student` VALUES ('123', '$2a$10$am3mFuY8MQa29.hLY7wDP.NEPlpp7OluLAC7waD4cwMHpmbG14C7i', 'a', '2', '1');
+INSERT INTO `student` VALUES ('16251102276', '$2a$10$JsPFAdqulQmZYZ/Wt0HBP.y5NBkhhxWJ0Q5vNZKhSLsdCJydXYdgG', '黄林杰', '计算机科学与技术', '信息学院');
+INSERT INTO `student` VALUES ('16251102277', '$2a$10$JsPFAdqulQmZYZ/Wt0HBP.y5NBkhhxWJ0Q5vNZKhSLsdCJydXYdgG', 'ddas', '护理', '医学院');
