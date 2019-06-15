@@ -7,6 +7,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "course")
@@ -28,7 +29,7 @@ public class Course implements Serializable {
     @Column
     private Integer selected;
 
-    @OneToMany(mappedBy = "course",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "course",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private List<Al> als;
 
     /**
@@ -37,13 +38,14 @@ public class Course implements Serializable {
     @ManyToMany
     @JoinTable(name = "sc",joinColumns = @JoinColumn(name = "courseid"),
             inverseJoinColumns = @JoinColumn(name = "studentid"))
-    private List<Student> students;
+    @JsonBackReference
+    private Set<Student> students;
 
-    public List<Student> getStudents() {
+    public Set<Student> getStudents() {
         return students;
     }
 
-    public void setStudents(List<Student> students) {
+    public void setStudents(Set<Student> students) {
         this.students = students;
     }
 

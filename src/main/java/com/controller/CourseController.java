@@ -18,6 +18,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/course")
+@CrossOrigin
 public class CourseController {
 
     @Autowired
@@ -38,12 +39,13 @@ public class CourseController {
      * 获取学号为id的选课情况
      * @return
      */
-    @RequestMapping(value = "/mycourse/{id}")
-    public Result getMyCourse(@PathVariable String id){
+    @RequestMapping(value = "/mycourse")
+    public Result getMyCourse(){
         Claims claims = (Claims) request.getAttribute("student_claims");
-        if (claims == null ||!claims.getId().equals(id)) {
+        if (claims == null) {
             return new Result(false, StatusCode.ACCESSERROR, "权限不足");
         }
+        String id = claims.getId();
         List<Course> courses = courseService.getMyCourseById(id);
         if(courses.size()>0)
             return new Result(true, StatusCode.OK,"我的选课情况",courses);

@@ -24,7 +24,6 @@ public class Student implements Serializable {
     private String academy; //学院
 
     @ManyToMany(mappedBy = "students")
-    @JsonBackReference
     private List<Course> courses;
 
     public List<Course> getCourses() {

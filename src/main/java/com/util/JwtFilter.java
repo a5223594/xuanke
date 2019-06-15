@@ -17,7 +17,9 @@ public class JwtFilter extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         System.out.println("经过了拦截器");
+        System.out.println(request.getRequestURL());
         String authHeader = request.getHeader("Authorization");
+        System.out.println(authHeader);
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);//去掉Bearer
             Claims claims =  jwtUtil.parseJWT(token);
@@ -30,6 +32,7 @@ public class JwtFilter extends HandlerInterceptorAdapter {
                 }
             }
         }
-        return true;
+        //return true;
+        return super.preHandle(request, response, handler);
     }
 }

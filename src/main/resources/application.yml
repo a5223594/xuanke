@@ -11,7 +11,8 @@ spring:
     hibernate:
       #format_sql: true
       show_sql: true
+
 jwt:
   config:
     key: huanglinjie
-    ttl: 360000
+    ttl: 3600000

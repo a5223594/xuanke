@@ -27,18 +27,19 @@ public class StudentController {
     @Autowired
     private StudentService studentService;
 
-    @RequestMapping(value = "", method = RequestMethod.GET)
+    @RequestMapping(value = "/getAll", method = RequestMethod.GET)
     public Result getAllStudent() {
         return new Result(true, StatusCode.OK, "查询所有学生信息", studentService.getAllStudent());
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public Result getStudent(@PathVariable String id) {
-        Claims claims = (Claims) request.getAttribute("student_claims");
+    @RequestMapping(value = "", method = RequestMethod.GET)
+    public Result getStudent() {
 
-        if (claims == null || !claims.getId().equals(id)) {
+        Claims claims = (Claims) request.getAttribute("student_claims");
+        if (claims == null) {
             return new Result(false, StatusCode.ACCESSERROR, "权限不足");
         }
+        String id = claims.getId();
         Optional<Student> optional = studentService.getStudentById(id);
         return optional.map(u -> new Result(true, StatusCode.OK, "查询成功", u)).orElse(
                 new Result(false, StatusCode.ERROR, "查询失败")

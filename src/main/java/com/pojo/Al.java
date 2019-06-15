@@ -1,6 +1,7 @@
 package com.pojo;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -19,7 +20,7 @@ public class Al implements Serializable {
 
     @ManyToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REFRESH})
     @JoinColumn(name = "courseid",referencedColumnName="id")
-    @JsonBackReference
+    @JsonIgnore
     private Course course;
 
     private String academy;

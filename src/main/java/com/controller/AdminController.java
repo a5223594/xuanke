@@ -18,6 +18,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/admin")
+@CrossOrigin
 public class AdminController {
 
     @Autowired
@@ -29,13 +30,14 @@ public class AdminController {
     @Autowired
     JwtUtil jwtUtil;
 
-    @RequestMapping(value = "/{id}",method = RequestMethod.GET)
-    public Result getAdminById(@PathVariable String id) {
+    @RequestMapping(value = "",method = RequestMethod.GET)
+    public Result getAdminById() {
         Claims claims = (Claims) request.getAttribute("admin_claims");
 
-        if (claims == null || !claims.getId().equals(id)) {
+        if (claims == null) {
             return new Result(false, StatusCode.ACCESSERROR, "权限不足");
         }
+        String id = claims.getId();
         Optional<Admin> optional = adminService.getAdminById(id);
         return optional.map(u->new Result(true, StatusCode.OK,"个人信息",u)).orElse(
           new Result(false,StatusCode.ERROR,"查询失败")
