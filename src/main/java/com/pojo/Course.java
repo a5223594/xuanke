@@ -1,6 +1,7 @@
 package com.pojo;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -35,10 +36,10 @@ public class Course implements Serializable {
     /**
      * 选课多对多关系，课程为主表，课程下有多个学生
      */
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "sc",joinColumns = @JoinColumn(name = "courseid"),
             inverseJoinColumns = @JoinColumn(name = "studentid"))
-    @JsonBackReference
+    @JsonIgnoreProperties(value = "courses")
     private Set<Student> students;
 
     public Set<Student> getStudents() {

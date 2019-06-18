@@ -1,6 +1,5 @@
 package com.pojo;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
@@ -23,7 +22,7 @@ public class Student implements Serializable {
 
     private String academy; //学院
 
-    @ManyToMany(mappedBy = "students")
+    @ManyToMany(mappedBy = "students",fetch = FetchType.EAGER)
     private List<Course> courses;
 
     public List<Course> getCourses() {
