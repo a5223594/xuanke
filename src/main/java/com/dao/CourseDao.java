@@ -1,6 +1,7 @@
 package com.dao;
 
 import com.pojo.Course;
+import org.hibernate.annotations.SQLInsert;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -22,5 +23,7 @@ public interface CourseDao extends JpaRepository<Course,String> {
 
     @Query(value = "select * from course join al on course.id = al.courseid where al.academy = ?1",nativeQuery = true)
     List<Course> getCoursesByAcademy(String academy);
+
+
 
 }

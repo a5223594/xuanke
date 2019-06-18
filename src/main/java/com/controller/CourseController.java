@@ -2,7 +2,9 @@ package com.controller;
 
 import com.pojo.Al;
 import com.pojo.Course;
+import com.pojo.Student;
 import com.service.CourseService;
+import com.service.StudentService;
 import com.status.Result;
 import com.status.StatusCode;
 import com.util.UpdateTool;
@@ -25,6 +27,9 @@ public class CourseController {
     private CourseService courseService;
 
     @Autowired
+    private StudentService studentService;
+
+    @Autowired
     HttpServletRequest request;
 
     @RequestMapping(value = "/{id}",method = RequestMethod.GET)
@@ -32,6 +37,27 @@ public class CourseController {
         Optional<Course> optional = courseService.getCourseById(id);
         return optional.map(course -> new Result(true, StatusCode.OK, "查询成功", course))
                 .orElse(new Result(false, StatusCode.ERROR, "查询失败"));
+    }
+
+    /**
+     * 选课
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/selectCourse/{id}",method = RequestMethod.GET)
+    public Result selectCourse(@PathVariable String id){
+
+        Claims claims = (Claims) request.getAttribute("student_claims");
+        if (claims == null) {
+            return new Result(false, StatusCode.ACCESSERROR, "权限不足");
+        }
+        String studentid = claims.getId();
+        Student student = studentService.getStudentById(studentid).get();
+        //todo 选课，没判断学院限制，年级限制，人数限制，添加人数
+        Course course = courseService.getCourseById(id).get();
+        course.getStudents().add(student);
+        courseService.updateCourse(course);
+        return new Result(true, StatusCode.OK, "选课成功");
     }
 
 

@@ -18,6 +18,7 @@ public class StudentService {
     @Autowired
     BCryptPasswordEncoder encoder;
 
+
     public List<Student> getAllStudent() {
         return studentDao.findAll();
     }
