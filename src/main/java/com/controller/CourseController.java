@@ -58,6 +58,11 @@ public class CourseController {
         }
         String studentid = claims.getId();
         Student student = studentService.getStudentById(studentid).get();
+        for (Student student1 : course.getStudents()) {
+            if(student1.getId().equals(studentid)){
+                return new Result(false, StatusCode.ERROR, "不能重复选课");
+            }
+        }
         //年级限制
         if(student.getGrade().equals(course.getGrade())){
             List<Al> als = course.getAls();//学院限制
@@ -68,17 +73,15 @@ public class CourseController {
                 }
             }
             if (flag) {
-
                 course.getStudents().add(student);
                 course.setSelected(course.getSelected()+1);
                 courseService.updateCourse(course);
                 return new Result(true, StatusCode.OK, "选课成功");
             }
         }
-        //todo 选课，没判断学院限制，年级限制，人数限制，添加人数
         return new Result(false, StatusCode.ERROR, "选课失败");
-
     }
+
 
 
     /**
