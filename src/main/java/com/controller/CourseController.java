@@ -51,13 +51,33 @@ public class CourseController {
         if (claims == null) {
             return new Result(false, StatusCode.ACCESSERROR, "权限不足");
         }
+        Course course = courseService.getCourseById(id).get();
+        //人数限制
+        if(course.getSelected()+1>course.getNumber()){
+            return new Result(false, StatusCode.ACCESSERROR, "选课人数已满");
+        }
         String studentid = claims.getId();
         Student student = studentService.getStudentById(studentid).get();
+        //年级限制
+        if(student.getGrade().equals(course.getGrade())){
+            List<Al> als = course.getAls();//学院限制
+            boolean flag = false;
+            for (Al al : als) {
+                if(al.getAcademy().equals(student.getAcademy())){
+                    flag = true;
+                }
+            }
+            if (flag) {
+
+                course.getStudents().add(student);
+                course.setSelected(course.getSelected()+1);
+                courseService.updateCourse(course);
+                return new Result(true, StatusCode.OK, "选课成功");
+            }
+        }
         //todo 选课，没判断学院限制，年级限制，人数限制，添加人数
-        Course course = courseService.getCourseById(id).get();
-        course.getStudents().add(student);
-        courseService.updateCourse(course);
-        return new Result(true, StatusCode.OK, "选课成功");
+        return new Result(false, StatusCode.ERROR, "选课失败");
+
     }
 
 

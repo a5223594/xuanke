@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 80012
 File Encoding         : 65001
 
-Date: 2019-06-15 11:33:28
+Date: 2019-06-19 17:22:58
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -70,21 +70,22 @@ CREATE TABLE `course` (
   `teacher` varchar(20) DEFAULT NULL COMMENT '老师名称',
   `number` int(11) DEFAULT NULL COMMENT '人数限制',
   `selected` int(11) DEFAULT NULL COMMENT '已选人数',
+  `grade` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of course
 -- ----------------------------
-INSERT INTO `course` VALUES ('1001', 'c语言程序设计', '张老师', '5', '1');
-INSERT INTO `course` VALUES ('1002', '宏观经济学', '李老师', '3', '0');
-INSERT INTO `course` VALUES ('1003', 'java程序设计', '张老师', '4', '0');
-INSERT INTO `course` VALUES ('1004', '市场营销学', '李老师', '6', '0');
-INSERT INTO `course` VALUES ('1005', '大学英语', '王老师', '3', '1');
-INSERT INTO `course` VALUES ('1006', '大学语文', '洪老师', '5', '0');
-INSERT INTO `course` VALUES ('1007', '编译原理', '程老师', '5', '1');
-INSERT INTO `course` VALUES ('1008', '人工智能', '陈老师', '5', '0');
-INSERT INTO `course` VALUES ('1009', '高等数学', '张老师', '6', '0');
+INSERT INTO `course` VALUES ('1001', 'c语言程序设计', '张老师', '5', '1', '大三');
+INSERT INTO `course` VALUES ('1002', '宏观经济学', '李老师', '3', '0', '大一');
+INSERT INTO `course` VALUES ('1003', 'java程序设计', '张老师', '4', '0', '大三');
+INSERT INTO `course` VALUES ('1004', '市场营销学', '李老师', '6', '0', '大二');
+INSERT INTO `course` VALUES ('1005', '大学英语', '王老师', '3', '1', '大三');
+INSERT INTO `course` VALUES ('1006', '大学语文', '洪老师', '5', '0', '大二');
+INSERT INTO `course` VALUES ('1007', '编译原理', '程老师', '5', '1', '大三');
+INSERT INTO `course` VALUES ('1008', '人工智能', '陈老师', '5', '0', '大三');
+INSERT INTO `course` VALUES ('1009', '高等数学', '张老师', '6', '0', '大四');
 
 -- ----------------------------
 -- Table structure for menu
@@ -144,12 +145,13 @@ CREATE TABLE `student` (
   `name` varchar(20) DEFAULT NULL COMMENT '姓名',
   `major` varchar(20) DEFAULT NULL COMMENT '专业',
   `academy` varchar(20) DEFAULT NULL COMMENT '学院',
+  `grade` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of student
 -- ----------------------------
-INSERT INTO `student` VALUES ('123', '$2a$10$am3mFuY8MQa29.hLY7wDP.NEPlpp7OluLAC7waD4cwMHpmbG14C7i', 'a', '2', '1');
-INSERT INTO `student` VALUES ('16251102276', '$2a$10$JsPFAdqulQmZYZ/Wt0HBP.y5NBkhhxWJ0Q5vNZKhSLsdCJydXYdgG', '黄林杰', '计算机科学与技术', '信息学院');
-INSERT INTO `student` VALUES ('16251102277', '$2a$10$JsPFAdqulQmZYZ/Wt0HBP.y5NBkhhxWJ0Q5vNZKhSLsdCJydXYdgG', 'ddas', '护理', '医学院');
+INSERT INTO `student` VALUES ('123', '$2a$10$am3mFuY8MQa29.hLY7wDP.NEPlpp7OluLAC7waD4cwMHpmbG14C7i', 'a', '2', '1', '大三');
+INSERT INTO `student` VALUES ('16251102276', '$2a$10$JsPFAdqulQmZYZ/Wt0HBP.y5NBkhhxWJ0Q5vNZKhSLsdCJydXYdgG', '黄林杰', '计算机科学与技术', '信息学院', '大三');
+INSERT INTO `student` VALUES ('16251102277', '$2a$10$JsPFAdqulQmZYZ/Wt0HBP.y5NBkhhxWJ0Q5vNZKhSLsdCJydXYdgG', 'ddas', '护理', '医学院', '大三');

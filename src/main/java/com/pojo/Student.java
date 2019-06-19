@@ -22,8 +22,19 @@ public class Student implements Serializable {
 
     private String academy; //学院
 
-    @ManyToMany(mappedBy = "students",fetch = FetchType.EAGER)
+    private String grade; //年级
+
+    @ManyToMany(mappedBy = "students")
+    @JsonIgnore
     private List<Course> courses;
+
+    public String getGrade() {
+        return grade;
+    }
+
+    public void setGrade(String grade) {
+        this.grade = grade;
+    }
 
     public List<Course> getCourses() {
         return courses;
