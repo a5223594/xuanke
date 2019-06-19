@@ -41,7 +41,7 @@ public class CourseController {
 
     /**
      * 选课
-     * @param id
+     * @param id 课程id
      * @return
      */
     @RequestMapping(value = "/selectCourse/{id}",method = RequestMethod.GET)
@@ -82,6 +82,29 @@ public class CourseController {
         return new Result(false, StatusCode.ERROR, "选课失败");
     }
 
+    /**
+     * 退课
+     * @param id 课程id
+     * @return
+     */
+    @RequestMapping(value = "/dropCourse/{id}",method = RequestMethod.GET)
+    public Result dropCourse(@PathVariable String id){
+        Claims claims = (Claims) request.getAttribute("student_claims");
+        if (claims == null) {
+            return new Result(false, StatusCode.ACCESSERROR, "权限不足");
+        }
+        Course course = courseService.getCourseById(id).get();
+        String studentid = claims.getId();
+        for (Student student : course.getStudents()) {
+            if(student.getId().equals(studentid)){
+                course.getStudents().remove(student);
+                course.setSelected(course.getSelected()-1);
+                courseService.updateCourse(course);
+                return new Result(true, StatusCode.OK, "退课成功");
+            }
+        }
+        return new Result(false, StatusCode.ERROR, "退课失败");
+    }
 
 
     /**
