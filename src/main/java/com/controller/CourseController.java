@@ -153,11 +153,10 @@ public class CourseController {
      */
     @RequestMapping(value = "",method = RequestMethod.GET)
     public Result getAllCourse() {
-        Claims claims = (Claims) request.getAttribute("admin_claims");
-
-        if (claims == null) {
-            return new Result(false, StatusCode.ACCESSERROR, "权限不足");
-        }
+//        Claims claims = (Claims) request.getAttribute("admin_claims");
+//        if (claims == null) {
+//            return new Result(false, StatusCode.ACCESSERROR, "权限不足");
+//        }
         List<Course> courses = courseService.getAllCourse();
         return new Result(true,StatusCode.OK,"查询成功", courses);
     }
