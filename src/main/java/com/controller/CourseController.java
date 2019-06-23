@@ -14,9 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/course")
@@ -147,6 +145,34 @@ public class CourseController {
         }
         return new Result(true,StatusCode.OK,"查询成功",courses);
     }
+
+    /**
+     * 获取所有老师
+     */
+    @RequestMapping(value= "/teachers",method = RequestMethod.GET)
+    public Result getTeachers(){
+        List<Course> allCourse = courseService.getAllCourse();
+        Set<String> ts = new HashSet<>();
+        for (Course course : allCourse) {
+            ts.add(course.getTeacher());
+        }
+        return new Result(true, StatusCode.OK, "所有老师", ts);
+    }
+    @RequestMapping(value= "/academy",method = RequestMethod.GET)
+    public Result getAcademy(){
+        List<Course> allCourse = courseService.getAllCourse();
+        Set<String> as = new HashSet<>();
+        for (Course course : allCourse) {
+            List<Al> als = course.getAls();
+            for (Al al : als) {
+                as.add(al.getAcademy());
+            }
+        }
+        return new Result(true, StatusCode.OK, "所有学院", as);
+    }
+
+
+
 
     /**
      * 查询选课情况
