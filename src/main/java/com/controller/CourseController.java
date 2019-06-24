@@ -5,12 +5,16 @@ import com.pojo.Course;
 import com.pojo.Student;
 import com.service.CourseService;
 import com.service.StudentService;
+import com.status.PageResult;
 import com.status.Result;
 import com.status.StatusCode;
 import com.util.UpdateTool;
 import io.jsonwebtoken.Claims;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -183,8 +187,19 @@ public class CourseController {
 //        if (claims == null) {
 //            return new Result(false, StatusCode.ACCESSERROR, "权限不足");
 //        }
+
         List<Course> courses = courseService.getAllCourse();
         return new Result(true,StatusCode.OK,"查询成功", courses);
+    }
+
+    /**
+     * 分页查询选课情况
+     */
+    @RequestMapping(value = "/page/{currentPage}",method = RequestMethod.GET)
+    public Result getPageCourse(@PathVariable int currentPage) {
+        Pageable pageable = PageRequest.of(currentPage-1,5);
+        Page<Course> courses = courseService.getAllCourse(pageable);
+        return new Result(true,StatusCode.OK,"查询成功", new PageResult<Course>(courses.getTotalElements(),courses.getContent()));
     }
 
 
