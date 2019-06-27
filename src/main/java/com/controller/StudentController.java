@@ -76,14 +76,18 @@ public class StudentController {
         return studentService.encodePassword(password);
     }
 
+    /**
+     * 修改密码
+     * @param map
+     * @return
+     */
     @RequestMapping(value = "/changePassword", method = RequestMethod.POST)
     public Result changePassword(@RequestBody Map<String, String> map) {
-        String id = map.get("id");
         Claims claims = (Claims) request.getAttribute("student_claims");
-
-        if (claims == null || !claims.getId().equals(id)) {
+        if (claims == null) {
             return new Result(false, StatusCode.ACCESSERROR, "权限不足");
         }
+        String id = claims.getId();
         String oldPassword = map.get("oldPassword");
         String newPassword = map.get("newPassword");
         if (StringUtils.isBlank(id) || StringUtils.isBlank(oldPassword) || StringUtils.isBlank(newPassword)) {

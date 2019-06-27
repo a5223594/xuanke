@@ -1,9 +1,6 @@
 package com.pojo;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
@@ -26,15 +23,18 @@ public class Course implements Serializable {
     private String teacher;
 
     @Column
-    private Integer number;
+    private int number;
 
     @Column
-    private Integer selected;
+    private int selected;
 
     @Column
     private String grade;
 
-    @OneToMany(mappedBy = "course",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    /*
+    orphanRemoval=true,在删除多方时，删除无关联的数据
+     */
+    @OneToMany(mappedBy = "course",cascade = CascadeType.ALL,fetch = FetchType.EAGER,orphanRemoval=true)
     private List<Al> als;
 
     /**
@@ -87,19 +87,19 @@ public class Course implements Serializable {
         this.teacher = teacher;
     }
 
-    public Integer getNumber() {
+    public int getNumber() {
         return number;
     }
 
-    public void setNumber(Integer number) {
+    public void setNumber(int number) {
         this.number = number;
     }
 
-    public Integer getSelected() {
+    public int getSelected() {
         return selected;
     }
 
-    public void setSelected(Integer selected) {
+    public void setSelected(int selected) {
         this.selected = selected;
     }
 

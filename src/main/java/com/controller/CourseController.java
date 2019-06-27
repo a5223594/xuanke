@@ -1,8 +1,10 @@
 package com.controller;
 
+import com.dao.AlDao;
 import com.pojo.Al;
 import com.pojo.Course;
 import com.pojo.Student;
+import com.service.AlService;
 import com.service.CourseService;
 import com.service.StudentService;
 import com.status.PageResult;
@@ -30,6 +32,9 @@ public class CourseController {
 
     @Autowired
     private StudentService studentService;
+
+    @Autowired
+    private AlService alService;
 
     @Autowired
     HttpServletRequest request;
@@ -164,14 +169,13 @@ public class CourseController {
     }
     @RequestMapping(value= "/academy",method = RequestMethod.GET)
     public Result getAcademy(){
-        List<Course> allCourse = courseService.getAllCourse();
+
         Set<String> as = new HashSet<>();
-        for (Course course : allCourse) {
-            List<Al> als = course.getAls();
-            for (Al al : als) {
-                as.add(al.getAcademy());
-            }
+        List<Al> als = alService.findAll();
+        for (Al al : als) {
+            as.add(al.getAcademy());
         }
+
         return new Result(true, StatusCode.OK, "所有学院", as);
     }
 
@@ -212,13 +216,13 @@ public class CourseController {
         }
         Optional<Course> optional = courseService.getCourseById(course.getId());
         if(optional.isPresent()){
-            return new Result(false,StatusCode.ERROR,"添加失败");
+            return new Result(false,StatusCode.ERROR,"课程编号重复");
         }else{
             //级联保存，al里应该设置course,不然courseid为null
             List<Al> als = course.getAls();
-            als.forEach(i->{
-                i.setCourse(course);
-            });
+            for (Al al : als) {
+                al.setCourse(course);
+            }
             courseService.addCourse(course);
             return new Result(true, StatusCode.OK, "添加成功");
         }
@@ -239,12 +243,13 @@ public class CourseController {
         }else if(!optional.isPresent()){
             return new Result(false,StatusCode.ERROR,"课程不存在");
         }else{
-            UpdateTool.copyNullProperties(optional.get(),course);
-            //更新al时，应传入id
+            Course course1 = optional.get(); //原始数据
+            UpdateTool.copyNullProperties(course1,course);//course是更改后的数据
             List<Al> als = course.getAls();
-            als.forEach(i->{
-                i.setCourse(course);
-            });
+            for (Al al : als) {
+                al.setCourse(course);
+            }
+            course.setAls(als);
             courseService.updateCourse(course);
             return new Result(true, StatusCode.OK, "更新成功");
         }

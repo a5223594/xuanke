@@ -16,6 +16,7 @@ public class Al implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private int id;
 
     @ManyToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REFRESH})
@@ -23,6 +24,7 @@ public class Al implements Serializable {
     @JsonIgnore
     private Course course;
 
+    @Column
     private String academy;
 
     public int getId() {
