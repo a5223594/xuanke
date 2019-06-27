@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 80012
 File Encoding         : 65001
 
-Date: 2019-06-19 17:22:58
+Date: 2019-06-27 14:32:47
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -29,7 +29,7 @@ CREATE TABLE `admin` (
 -- ----------------------------
 -- Records of admin
 -- ----------------------------
-INSERT INTO `admin` VALUES ('admin', '$2a$10$uAAHR/u2T1tsR4oQt5E1dumoqmCUPEDeMX2W5wOnmyQCnQexvVQ.6', '黄林杰');
+INSERT INTO `admin` VALUES ('admin', '$2a$10$T0fMzXn4sMXl8iVLMvPiDO8SyYwhwYePAQnT2BNQw/a9Bu03ubc96', '黄林杰');
 
 -- ----------------------------
 -- Table structure for al
@@ -42,23 +42,24 @@ CREATE TABLE `al` (
   PRIMARY KEY (`id`),
   KEY `FK_ID` (`courseid`),
   CONSTRAINT `FK_ID` FOREIGN KEY (`courseid`) REFERENCES `course` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8 COMMENT='学院限制';
+) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8 COMMENT='学院限制';
 
 -- ----------------------------
 -- Records of al
 -- ----------------------------
 INSERT INTO `al` VALUES ('1001', '信息学院', '1');
-INSERT INTO `al` VALUES ('1002', '管理学院', '2');
-INSERT INTO `al` VALUES ('1002', '经济学院', '3');
 INSERT INTO `al` VALUES ('1003', '信息学院', '4');
 INSERT INTO `al` VALUES ('1004', '经济学院', '5');
 INSERT INTO `al` VALUES ('1005', '信息学院', '6');
 INSERT INTO `al` VALUES ('1005', '医学院', '7');
-INSERT INTO `al` VALUES ('1006', '管理学院', '8');
-INSERT INTO `al` VALUES ('1006', '经济学院', '9');
 INSERT INTO `al` VALUES ('1007', '信息学院', '10');
-INSERT INTO `al` VALUES ('1008', '数统学院', '22');
-INSERT INTO `al` VALUES ('1009', '数统学院', '26');
+INSERT INTO `al` VALUES ('1008', '信息学院', '11');
+INSERT INTO `al` VALUES ('1002', '管理学院', '25');
+INSERT INTO `al` VALUES ('1002', '信息学院', '26');
+INSERT INTO `al` VALUES ('1006', '管理学院', '33');
+INSERT INTO `al` VALUES ('1006', '金融学院', '34');
+INSERT INTO `al` VALUES ('1011', '数统学院', '38');
+INSERT INTO `al` VALUES ('1012', '数统学院', '41');
 
 -- ----------------------------
 -- Table structure for course
@@ -81,38 +82,12 @@ INSERT INTO `course` VALUES ('1001', 'c语言程序设计', '张老师', '5', '1
 INSERT INTO `course` VALUES ('1002', '宏观经济学', '李老师', '3', '0', '大一');
 INSERT INTO `course` VALUES ('1003', 'java程序设计', '张老师', '4', '0', '大三');
 INSERT INTO `course` VALUES ('1004', '市场营销学', '李老师', '6', '0', '大二');
-INSERT INTO `course` VALUES ('1005', '大学英语', '王老师', '3', '1', '大三');
+INSERT INTO `course` VALUES ('1005', '大学英语', '王老师', '3', '2', '大三');
 INSERT INTO `course` VALUES ('1006', '大学语文', '洪老师', '5', '0', '大二');
 INSERT INTO `course` VALUES ('1007', '编译原理', '程老师', '5', '1', '大三');
-INSERT INTO `course` VALUES ('1008', '人工智能', '陈老师', '5', '0', '大三');
-INSERT INTO `course` VALUES ('1009', '高等数学', '张老师', '6', '0', '大四');
-
--- ----------------------------
--- Table structure for menu
--- ----------------------------
-DROP TABLE IF EXISTS `menu`;
-CREATE TABLE `menu` (
-  `id` varchar(20) NOT NULL COMMENT '菜单id',
-  `operation` varchar(20) DEFAULT NULL COMMENT '操作',
-  `url` varchar(40) DEFAULT NULL COMMENT '请求url',
-  `pid` varchar(20) DEFAULT NULL COMMENT '上级菜单id',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Records of menu
--- ----------------------------
-INSERT INTO `menu` VALUES ('0', '权限菜单', null, '-1');
-INSERT INTO `menu` VALUES ('100', '管理员菜单', null, '0');
-INSERT INTO `menu` VALUES ('101', '添加课程', null, '100');
-INSERT INTO `menu` VALUES ('102', '修改课程', null, '100');
-INSERT INTO `menu` VALUES ('103', '删除课程', null, '100');
-INSERT INTO `menu` VALUES ('104', '课程选课情况', null, '100');
-INSERT INTO `menu` VALUES ('200', '学生菜单', null, '0');
-INSERT INTO `menu` VALUES ('201', '排课情况', null, '200');
-INSERT INTO `menu` VALUES ('202', '选课', null, '200');
-INSERT INTO `menu` VALUES ('203', '退课', null, '200');
-INSERT INTO `menu` VALUES ('204', '个人选课情况', null, '200');
+INSERT INTO `course` VALUES ('1008', '人工智能', '陈老师', '1', '1', '大三');
+INSERT INTO `course` VALUES ('1011', '算法', '张老师', '6', '0', '大三');
+INSERT INTO `course` VALUES ('1012', '法', '张老师', '6', '1', '大四');
 
 -- ----------------------------
 -- Table structure for sc
@@ -134,6 +109,8 @@ INSERT INTO `sc` VALUES ('16251102276', '1001');
 INSERT INTO `sc` VALUES ('16251102276', '1005');
 INSERT INTO `sc` VALUES ('16251102276', '1007');
 INSERT INTO `sc` VALUES ('16251102277', '1005');
+INSERT INTO `sc` VALUES ('1', '1012');
+INSERT INTO `sc` VALUES ('16251102276', '1008');
 
 -- ----------------------------
 -- Table structure for student
@@ -152,6 +129,7 @@ CREATE TABLE `student` (
 -- ----------------------------
 -- Records of student
 -- ----------------------------
+INSERT INTO `student` VALUES ('1', '$2a$10$am3mFuY8MQa29.hLY7wDP.NEPlpp7OluLAC7waD4cwMHpmbG14C7i', '测试', '2', '数统学院', '大四');
 INSERT INTO `student` VALUES ('123', '$2a$10$am3mFuY8MQa29.hLY7wDP.NEPlpp7OluLAC7waD4cwMHpmbG14C7i', 'a', '2', '1', '大三');
-INSERT INTO `student` VALUES ('16251102276', '$2a$10$JsPFAdqulQmZYZ/Wt0HBP.y5NBkhhxWJ0Q5vNZKhSLsdCJydXYdgG', '黄林杰', '计算机科学与技术', '信息学院', '大三');
+INSERT INTO `student` VALUES ('16251102276', '$2a$10$01sugpjhc714fwy3zqQ/OuuwIgarq4kChDHjTViLTwPqHkdXpYsde', '黄林杰', '计算机科学与技术', '信息学院', '大三');
 INSERT INTO `student` VALUES ('16251102277', '$2a$10$JsPFAdqulQmZYZ/Wt0HBP.y5NBkhhxWJ0Q5vNZKhSLsdCJydXYdgG', 'ddas', '护理', '医学院', '大三');
