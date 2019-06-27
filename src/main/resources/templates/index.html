@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>学生选课系统</title>
+    <script src="../static/js/vue.js"></script>
+    <script src="../static/js/axios.min.js"></script>
+    <!--引入样式 -->
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入组件库 -->
+    <link rel="stylesheet" href="../static/css/header.css">
+    <script src="../static/js/index.js"></script>
+
+</head>
+<body>
+<div id="index">
+
+    <el-container style="height: 545px; border: 1px solid #eee">
+        <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
+            <el-menu class="el-menu-demo" :default-openeds="['1']">
+                <el-submenu index="1">
+                    <template slot="title">欢迎，{{student.name}}</template>
+                    <el-menu-item index="1-1" @click="getInformation()">个人信息</el-menu-item>
+                    <el-menu-item index="1-2" @click="getMyCoursePage()">我的课表</el-menu-item>
+                    <el-menu-item index="1-3" @click="getCoursePage()">选课界面</el-menu-item>
+                    <el-menu-item index="1-4" @click="dialogFormVisible = true">修改密码</el-menu-item>
+                </el-submenu>
+            </el-menu>
+        </el-aside>
+        <el-container>
+            <el-header></el-header>
+            <el-main>
+                <template>
+                    <!--个人信息-->
+                    <el-table :data="students" v-if="t==1" style="width: 100%">
+                        <el-table-column property="id" label="学号"></el-table-column>
+                        <el-table-column property="name" label="姓名"></el-table-column>
+                        <el-table-column property="major" label="专业"></el-table-column>
+                        <el-table-column property="academy" label="学院"></el-table-column>
+                        <el-table-column property="grade" label="年级"></el-table-column>
+                    </el-table>
+                    <!--我的课表-->
+                    <el-table :data="mycourse" v-if="t==2" style="width: 100%">
+                        <el-table-column property="id" label="课程编号"></el-table-column>
+                        <el-table-column property="name" label="课程名"></el-table-column>
+                        <el-table-column property="teacher" label="老师"></el-table-column>
+                        <el-table-column property="number" label="课程人数"></el-table-column>
+                        <el-table-column property="selected" label="已选人数"></el-table-column>
+                        <el-table-column property="grade" label="年级"></el-table-column>
+                        <el-table-column property="als" label="学院"></el-table-column>
+                    </el-table>
+
+                    <!--选课界面-->
+                    <div v-if="t==3">
+                        <div>
+                            <el-select size="mini" clearable v-model="formData.teacher" placeholder="老师姓名">
+                                <el-option
+                                        v-for="item in teachers"
+                                        :key="item"
+                                        :label="item"
+                                        :value="item">
+                                </el-option>
+                            </el-select>
+                            <el-select size="mini" clearable v-model="formData.academy" placeholder="学院名称">
+                                <el-option
+                                        v-for="item in academys"
+                                        :key="item"
+                                        :label="item"
+                                        :value="item">
+                                </el-option>
+                            </el-select>
+                            <el-button size="mini" type="primary" @click="filterCourse()" icon="el-icon-search">筛选</el-button>
+                            <el-input size="mini" style="width:200px;" v-model="courseid" placeholder="请输入课程编号"></el-input>
+                            <el-button size="mini" type="primary" @click="findCourse()" icon="el-icon-search">搜索</el-button>
+                        </div>
+                        <div style="margin:15px"></div>
+                        <el-table :data="courses"
+                                  style="width: 100%">
+                            <el-table-column property="id" width="90px" label="课程编号"></el-table-column>
+                            <el-table-column property="name" label="课程名程"></el-table-column>
+                            <el-table-column property="teacher" width="90px" label="老师名称"></el-table-column>
+                            <el-table-column property="number" width="90px" label="人数限制"></el-table-column>
+                            <el-table-column property="selected" width="90px" label="已选人数"></el-table-column>
+                            <el-table-column property="grade" width="90px" label="年级"></el-table-column>
+                            <el-table-column property="als" label="学院限制"></el-table-column>
+                            <el-table-column label="操作">
+                                <template slot-scope="scope">
+                                    <el-button
+                                            v-if="d(scope.row)"
+                                            disabled
+                                            size="mini"
+                                            type="Info">已选
+                                    </el-button>
+                                    <el-button
+                                            v-if="!d(scope.row)"
+                                            :disabled="scope.row.number===scope.row.selected"
+                                            size="mini"
+                                            type="success"
+                                            @click="selectCourse(scope.row)">选择
+                                    </el-button>
+                                    <el-button
+                                            v-if="d(scope.row)"
+                                            size="mini"
+                                            type="danger"
+                                            @click="dropCourse(scope.row)">退课
+                                    </el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                        <div style="margin:10px"></div>
+                        <el-pagination
+                                style="position:absolute;left:485px;"
+                                @current-change="handleCurrentChange"
+                                :current-page="currentPage"
+                                :page-size="5"
+                                layout="total, prev, pager, next, jumper"
+                                :total="total">
+                        </el-pagination>
+                    </div>
+                    <!--修改密码对话框-->
+                    <el-dialog title="修改密码" label-width="90px" :visible.sync="dialogFormVisible">
+                        <el-form label-position="right" :model="passwordForm" status-icon :rules="rules" ref="passwordForm">
+                            <el-form-item label="原密码" prop="oldPassword" label-width="120px">
+                                <el-input type="password" v-model="passwordForm.oldPassword" autocomplete="off"></el-input>
+                            </el-form-item>
+                            <el-form-item label="新密码" prop="newPassword" label-width="120px">
+                                <el-input type="password" v-model="passwordForm.newPassword" autocomplete="off"></el-input>
+                            </el-form-item>
+                            <el-form-item label="确认密码" prop="newPassword2" label-width="120px">
+                                <el-input type="password" v-model="passwordForm.newPassword2" autocomplete="off"></el-input>
+                            </el-form-item>
+                        </el-form>
+                        <div slot="footer" class="dialog-footer">
+                            <el-button @click="dialogFormVisible = false">取 消</el-button>
+                            <el-button type="primary" @click="changePassword('passwordForm')">确 定</el-button>
+                        </div>
+                    </el-dialog>
+                </template>
+            </el-main>
+
+        </el-container>
+    </el-container>
+</div>
+<script type="text/javascript">
+    axios.interceptors.request.use(
+        config => {
+            const token = localStorage.getItem("token");
+            if (token) {
+                config.headers.Authorization = token;
+            }
+            return config;
+        },
+        error => {
+            return Promise.reject(error)
+        });
+    var Main = {
+
+        data() {
+            var validatePass = (rule, value, callback) => {
+                if (value === '') {
+                    callback(new Error('请输入密码'));
+                }
+                    callback();
+
+            };
+            var validatePass2 = (rule, value, callback) => {
+                if (value === '') {
+                    callback(new Error('请再次输入密码'));
+                } else if (value !== this.passwordForm.newPassword) {
+                    callback(new Error('两次输入密码不一致!'));
+                } else {
+                    callback();
+                }
+            };
+            return {
+                student: '',
+                students: [],
+                mycourse: [],
+                teachers: [],
+                academys: [],
+                courses: [],
+                courseid: '',
+                dialogFormVisible:false,
+                currentPage: 1,
+                passwordForm:{
+                    oldPassword:'',
+                    newPassword:'',
+                    newPassword2:''
+                },
+                total: 10,
+                formData: {
+                    teacher: '',
+                    academy: ''
+                },
+                rules: {
+                    oldPassword: [
+                        { validator: validatePass, trigger: 'blur' }
+                    ],
+                    newPassword: [
+                        { validator: validatePass, trigger: 'blur' }
+                    ],
+                    newPassword2: [
+                        { validator: validatePass2, trigger: 'blur' }
+                    ],
+                },
+                d(row) {
+                    if (this.mycourse === null) {
+                        return false;
+                    }
+                    let array = this.mycourse.map((item) => item.id);
+                    for (i = 0; i < array.length; i++) {
+                        if (array[i] === row.id)
+                            return true;
+                    }
+                    return false;
+                },
+                t: 1
+            };
+        },
+        methods: {
+            getInformation() {
+                this.t = 1
+            },
+            getMyCoursePage() {
+                this.getMyCourse();
+                this.t = 2;
+            },
+            getCoursePage() {
+                this.getCourse();
+                this.t = 3;
+            },
+            getMyCourse() {
+                axios.get("http://localhost:8080/course/mycourse")
+                    .then(response => {
+                            let temp = response.data.data;
+                            for (let i in temp) {
+                                let als = temp[i].als;
+                                let filters = als.map((item) => item.academy);
+                                temp[i].als = filters.join(',')
+                            }
+                            this.mycourse = temp;
+                        }
+                    );
+            },
+            findCourse() {
+                if (this.courseid != null && this.courseid.trim() !== '') {
+                    axios.get("http://localhost:8080/course/" + this.courseid.trim())
+                        .then(response => {
+                            let temp = response.data.data;
+                            let als = temp.als;
+                            let filters = als.map((item) => item.academy);
+                            temp.als = filters.join(',');
+                            this.courses.splice(0, this.courses.length);
+                            this.courses.push(temp);
+                        });
+                } else {
+                    this.getCourse()
+                }
+            },
+            filterCourse() {
+                let formData = JSON.stringify(this.formData);
+                let config = {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                };
+                axios.post("http://localhost:8080/course/find", formData, config)
+                    .then(response => {
+                        let temp = response.data.data;
+                        for (let i in temp) {
+                            let als = temp[i].als;
+                            let filters = als.map((item) => item.academy);
+                            temp[i].als = filters.join(',');
+                        }
+                        this.courses = temp;
+                        this.t = 3
+
+                    });
+            },
+            getCourse() {
+                this.getMyCourse();
+                axios.get("http://localhost:8080/course/page/" + this.currentPage)
+                    .then(response => {
+                        let temp = response.data.data.rows;
+                        for (let i in temp) {
+                            let als = temp[i].als;
+                            let filters = als.map((item) => item.academy);
+                            temp[i].als = filters.join(',');
+                        }
+                        this.courses = temp;
+                        this.total = response.data.data.total;
+                        this.t = 3
+                    });
+            },
+            selectCourse(row) {
+                this.$confirm('是否确定选课?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    axios.get("http://localhost:8080/course/selectCourse/" + row.id)
+                        .then(response => {
+                            this.getCourse();
+                            this.$message({
+                                type: response.data.flag ? 'success' : 'error',
+                                message: response.data.message
+                            });
+                        });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消选课'
+                    });
+                });
+            },
+            dropCourse(row) {
+                this.$confirm('是否确定退课?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    axios.get("http://localhost:8080/course/dropCourse/" + row.id)
+                        .then(response => {
+                            this.getCourse();
+                            this.$message({
+                                type: response.data.flag ? 'success' : 'error',
+                                message: response.data.message
+                            });
+                        });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消退课'
+                    });
+                });
+            },
+            changePassword(formName){
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        this.$confirm('是否确定修改?', '提示', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            type: 'warning'
+                        }).then(() => {
+                            let formData = JSON.stringify(this.passwordForm);
+                            let config = {
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                }
+                            };
+                            axios.post("http://localhost:8080/student/changePassword", formData, config)
+                                .then(response => {
+                                    this.dialogFormVisible =false;
+                                    this.$message({
+                                        type: response.data.flag?'success':'error',
+                                        message: response.data.message
+
+                                    });
+                                });
+                        }).catch(() => {
+                            this.dialogFormVisible =false;
+                            this.$message({
+                                type: 'info',
+                                message: '已取消'
+                            });
+
+                        });
+                    } else {
+                        this.$message({
+                            type: 'error',
+                            message: '操作失败'
+                        });
+                        return false;
+                    }
+                });
+            },
+            handleCurrentChange: function (currentPage) {
+                this.currentPage = currentPage;
+                this.getCourse();
+            }
+        },
+
+        created() {
+            axios.get("http://localhost:8080/student")
+                .then(response => {
+                        this.student = response.data.data;
+                        this.students.push(this.student)
+                    }
+                );
+            axios.get("http://localhost:8080/course/teachers")
+                .then(response => {
+                        this.teachers = Array.from(response.data.data);
+                    }
+                );
+            axios.get("http://localhost:8080/course/academy")
+                .then(response => {
+                        this.academys = Array.from(response.data.data);
+                    }
+                );
+
+        }
+
+    };
+    var Ctor = Vue.extend(Main);
+    new Ctor().$mount('#index');
+
+</script>
+</body>
+
+</html>

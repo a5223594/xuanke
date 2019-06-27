@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>登录</title>
+    <link rel="stylesheet" href="../static/css/login.css"/>
+    <script src="../static/js/vue.js"></script>
+    <script src="../static/js/axios.min.js"></script>
+    <script src="../static/js/index.js"></script>
+</head>
+
+<body>
+
+<div class="content">
+    <div class="login">
+        <div class="title">选课系统登录</div>
+        <form>
+            <div class="locon">
+                <div class="line">
+                    <img class="smallImg" src="../static/img/icon3.png"/>
+                    <input v-model="userinfo.id" placeholder="请输入账号" type="text"/>
+                </div>
+                <div class="line">
+                    <img class="smallImg" src="../static/img/icon4.png"/>
+                    <input v-model="userinfo.password" placeholder="请输入密码" type="password"/>
+                </div>
+                <div>
+                    <template>
+                        <el-radio v-model="userinfo.picked" label="student">学生</el-radio>
+                        <el-radio v-model="userinfo.picked" label="admin">管理员</el-radio>
+                    </template>
+                </div>
+                <el-button @click="submitForm($event)" class="logBut">登&nbsp;&nbsp;录</el-button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    window.onload = function () {
+
+        new Vue({
+            el: 'form',
+            data: {
+                userinfo: {
+                    id: '',
+                    password: '',
+                    picked: 'student'
+                }
+            },
+            methods: {
+                async submitForm(event) {
+                    event.preventDefault();
+                    let formData = JSON.stringify(this.userinfo);
+                    let config = {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    };
+                    if (this.userinfo.picked === 'student') {
+                        let res = await axios.post('http://127.0.0.1:8080/student/login', formData,config);
+                        if(res.data.code === 20002){
+                            this.$alert(res.data.message, '提示', {
+                                confirmButtonText: '确定'
+                            });
+                            return;
+                        }
+                        let token = res.data.data.token;
+                        localStorage.setItem("token", token);
+                        window.location.href = 'i';
+
+                    }
+                    if (this.userinfo.picked === 'admin') {
+                        let res = await axios.post('http://127.0.0.1:8080/admin/login', formData, config);
+                        if(res.data.code === 20002){
+                            this.$alert(res.data.message, '提示', {
+                                confirmButtonText: '确定'
+                            });
+                            return;
+                        }
+                        let token = res.data.data.token;
+                        localStorage.setItem("token", token);
+                        window.location.href = 'a';
+                    }
+                }
+            }
+        })
+    };
+
+
+</script>
+
+</body>
+</html>
